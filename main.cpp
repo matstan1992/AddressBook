@@ -214,7 +214,7 @@ int wczytajOsobyZPliku(vector <Adresat>& adresaci, int idZalogowanegoUzytkownika
     return iloscOsob;
 }
 
-void zapiszDoPliku(vector <Adresat>& adresaci, int typOperacji, int idAdresata)
+void zapiszDoPliku(vector <Adresat>& adresaci, int typOperacji, int idAdresata, vector <int>& idLicznik)
 {
     //typOperacji == 0 -> usun
     //typOperacji == 1 -> edycja
@@ -229,11 +229,13 @@ void zapiszDoPliku(vector <Adresat>& adresaci, int typOperacji, int idAdresata)
     {
         if(typOperacji == 0)
         {
+            idLicznik.clear();
             while(getline(plik, linia))
             {
                 vector <string> splited = split(linia, '|');
                 if(idAdresata != atoi(splited[0].c_str()))
                 {
+                    idLicznik.push_back(atoi(splited[0].c_str()));
                     plikTymczasowy << atoi(splited[0].c_str()) << '|';
                     plikTymczasowy << atoi(splited[1].c_str()) << '|';
                     plikTymczasowy << splited[2] << '|';
@@ -287,7 +289,7 @@ void zapiszDoPliku(vector <Adresat>& adresaci, int typOperacji, int idAdresata)
     rename("KsiazkaAdresowa_tymczasowa.txt", "KsiazkaAdresowa.txt");
 }
 
-void edytujDaneAdresata(vector <Adresat>& adresaci)
+void edytujDaneAdresata(vector <Adresat>& adresaci, vector <int>& idLicznik)
 {
     int idEdycja = 0;
     char wybor;
@@ -326,7 +328,7 @@ void edytujDaneAdresata(vector <Adresat>& adresaci)
                 cin >> imie;
 
                 adresaci[i].imie = imie;
-                zapiszDoPliku(adresaci, 1, idEdycja);
+                zapiszDoPliku(adresaci, 1, idEdycja, idLicznik);
                 cout << "Imie zostalo zmienione." << endl;
                 Sleep(1500);
             }
@@ -337,7 +339,7 @@ void edytujDaneAdresata(vector <Adresat>& adresaci)
                 cin >> nazwisko;
 
                 adresaci[i].nazwisko = nazwisko;
-                zapiszDoPliku(adresaci, 1, idEdycja);
+                zapiszDoPliku(adresaci, 1, idEdycja, idLicznik);
                 cout << "Nazwisko zostalo zmienione." << endl;
                 Sleep(1500);
             }
@@ -349,7 +351,7 @@ void edytujDaneAdresata(vector <Adresat>& adresaci)
                 getline(cin, numerTelefonu);
 
                 adresaci[i].numerTelefonu = numerTelefonu;
-                zapiszDoPliku(adresaci, 1, idEdycja);
+                zapiszDoPliku(adresaci, 1, idEdycja, idLicznik);
                 cout << "Numer telefonu zostal zmieniony." << endl;
                 Sleep(1500);
             }
@@ -360,7 +362,7 @@ void edytujDaneAdresata(vector <Adresat>& adresaci)
                 cin >> email;
 
                 adresaci[i].email = email;
-                zapiszDoPliku(adresaci, 1, idEdycja);
+                zapiszDoPliku(adresaci, 1, idEdycja, idLicznik);
                 cout << "Email zostal zmieniony." << endl;
                 Sleep(1500);
             }
@@ -372,7 +374,7 @@ void edytujDaneAdresata(vector <Adresat>& adresaci)
                 getline(cin, adres);
 
                 adresaci[i].adres = adres;
-                zapiszDoPliku(adresaci, 1, idEdycja);
+                zapiszDoPliku(adresaci, 1, idEdycja, idLicznik);
                 cout << "Adres zostal zmieniony." << endl;
                 Sleep(1500);
             }
@@ -384,7 +386,7 @@ void edytujDaneAdresata(vector <Adresat>& adresaci)
     }
 }
 
-int usunOsobe(vector <Adresat>& adresaci, int iloscOsob)
+int usunOsobe(vector <Adresat>& adresaci, int iloscOsob, vector <int>& idLicznik)
 {
     int idUsun = 0;
     char wybor;
@@ -410,7 +412,7 @@ int usunOsobe(vector <Adresat>& adresaci, int iloscOsob)
             {
                 adresaci.erase(adresaci.begin() + i);
                 iloscOsob--;
-                zapiszDoPliku(adresaci, 0, idUsun);
+                zapiszDoPliku(adresaci, 0, idUsun, idLicznik);
                 cout << "Adresat zostal usuniety.";
                 Sleep(1500);
             }
@@ -613,11 +615,11 @@ int main()
             }
             else if(wybor == '5')
             {
-                iloscOsob = usunOsobe(adresaci, iloscOsob);
+                iloscOsob = usunOsobe(adresaci, iloscOsob, idLicznik);
             }
             else if(wybor == '6')
             {
-                edytujDaneAdresata(adresaci);
+                edytujDaneAdresata(adresaci, idLicznik);
             }
             else if(wybor == '7')
             {
